@@ -3,6 +3,7 @@ package net.kairost.knockuback.command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
+import net.minecraft.command.DefaultPermissions;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.Text;
@@ -25,7 +26,8 @@ public class ModCommands {
                     CommandManager.literal("enabled")
                         .then(
                             CommandManager.literal("set")
-                                .requires(source -> source.hasPermissionLevel(2)) // OP-only
+                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
+                                // OP-only
                                 .then(
                                     CommandManager.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> {
@@ -43,7 +45,7 @@ public class ModCommands {
                     CommandManager.literal("allowCombo")
                         .then(
                             CommandManager.literal("set")
-                                .requires(source -> source.hasPermissionLevel(2)) // OP-only
+                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
                                 .then(
                                     CommandManager.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> {
@@ -61,7 +63,7 @@ public class ModCommands {
                     CommandManager.literal("comboTick")
                         .then(
                             CommandManager.literal("set")
-                                .requires(source -> source.hasPermissionLevel(2)) // OP-only
+                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
                                 .then(
                                     CommandManager.argument("value", IntegerArgumentType.integer(0))
                                         .executes(ctx -> {
