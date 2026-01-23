@@ -83,7 +83,7 @@ public class ModCommands {
         AutoConfig.getConfigHolder(ModConfig.class).save();
 
         source.sendFeedback(
-            Text.literal("KnockUBack enabled " + value),
+            () -> Text.literal("KnockUBack enabled " + value),
             true
         );
         return 1;
@@ -93,7 +93,7 @@ public class ModCommands {
         boolean value = ModConfig.INSTANCE.enabled;
 
         source.sendFeedback(
-            Text.literal("KnockUBack enabled " + value),
+            () -> Text.literal("KnockUBack enabled " + value),
             false
         );
         return 1;
@@ -104,7 +104,7 @@ public class ModCommands {
         AutoConfig.getConfigHolder(ModConfig.class).save();
 
         source.sendFeedback(
-            Text.literal("KnockUBack allow Combo " + value),
+            () -> Text.literal("KnockUBack allow Combo " + value),
             true
         );
         return 1;
@@ -114,7 +114,7 @@ public class ModCommands {
         boolean value = ModConfig.INSTANCE.allowCombo;
 
         source.sendFeedback(
-            Text.literal("KnockUBack allow Combo " + value),
+            () -> Text.literal("KnockUBack allow Combo " + value),
             false
         );
         return 1;
@@ -126,7 +126,7 @@ public class ModCommands {
         AutoConfig.getConfigHolder(ModConfig.class).save();
 
         source.sendFeedback(
-            Text.literal("KnockUBack Combo Tick " + value),
+            () -> Text.literal("KnockUBack Combo Tick " + value),
             true
         );
         return 1;
@@ -136,7 +136,7 @@ public class ModCommands {
         int value = ModConfig.INSTANCE.comboTick;
 
         source.sendFeedback(
-            Text.literal("KnockUBack Combo Tick " + value),
+            () -> Text.literal("KnockUBack Combo Tick " + value),
             false
         );
         return 1;
