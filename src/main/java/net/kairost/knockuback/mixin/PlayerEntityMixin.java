@@ -1,5 +1,6 @@
 package net.kairost.knockuback.mixin;
 
+import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
@@ -44,6 +45,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     )
     private float knockuback$modifyAmount(
         float amount,
+        ServerWorld world,
         DamageSource source
     ) {
         if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity) && amount == 0.0f && this.knockubackCoolDown == 0) {
@@ -60,7 +62,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     }
 
     @Inject(method = "damage", at = @At("HEAD"))
-    private void knockuback$onDamage(DamageSource source, float amount, CallbackInfoReturnable cir) {
+    private void knockuback$onDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable cir) {
         if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
             if (ModConfig.INSTANCE.allowCombo) {
                 this.timeUntilRegenTmp = this.timeUntilRegen;
@@ -78,7 +80,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     }
 
     @Inject(method = "damage", at = @At("RETURN"))
-    private void knockuback$afterDamage(DamageSource source, float amount, CallbackInfoReturnable cir) {
+    private void knockuback$afterDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable cir) {
         if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
             if (ModConfig.INSTANCE.allowCombo) {
                 this.timeUntilRegen = timeUntilRegenTmp;
