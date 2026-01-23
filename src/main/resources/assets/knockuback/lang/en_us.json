@@ -1,0 +1,7 @@
+{
+
+  "text.autoconfig.knockuback.title": "Knock U Back",
+  "text.autoconfig.knockuback.option.enabled": "Enabled",
+  "text.autoconfig.knockuback.option.allowCombo": "Allow Combo",
+  "text.autoconfig.knockuback.option.comboTick": "Minimal Hit Interval (in Ticks)"
+}
