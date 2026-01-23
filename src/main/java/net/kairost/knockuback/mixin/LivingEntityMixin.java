@@ -1,5 +1,6 @@
 package net.kairost.knockuback.mixin;
 
+import net.minecraft.entity.LazyEntityReference;
 import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import org.jetbrains.annotations.Nullable;
@@ -9,10 +10,10 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends EntityMixin{
     @Shadow
-    protected int playerHitTimer;
-    @Shadow
     @Nullable
-    protected PlayerEntity attackingPlayer;
+    protected LazyEntityReference<PlayerEntity> attackingPlayer;
+    @Shadow
+    protected int playerHitTimer;
     @Shadow
     protected float lastDamageTaken;
     @Shadow

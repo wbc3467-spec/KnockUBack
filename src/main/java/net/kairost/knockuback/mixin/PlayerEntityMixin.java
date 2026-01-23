@@ -1,10 +1,12 @@
 package net.kairost.knockuback.mixin;
 
+import net.minecraft.entity.LazyEntityReference;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.entity.damage.DamageSource;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.entity.projectile.thrown.EggEntity;
 import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -33,7 +35,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     private int knockubackCoolDown;
 
     @Unique
-    private PlayerEntity attackingPlayerTmp;
+    private @Nullable LazyEntityReference<PlayerEntity> attackingPlayerTmp;
 
     @Unique
     private static final float EPSILON = Float.MIN_VALUE;
