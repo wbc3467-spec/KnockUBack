@@ -3,9 +3,7 @@ package net.kairost.knockuback;
 import net.fabricmc.api.ModInitializer;
 import net.kairost.knockuback.command.ModCommands;
 import net.kairost.knockuback.config.ModConfig;
-import org.spongepowered.asm.mixin.Debug;
 
-@Debug(export = true)
 public class KnockUBack implements ModInitializer {
     public static final String MODID = "knockuback";
 
