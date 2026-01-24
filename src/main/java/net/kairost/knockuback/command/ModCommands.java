@@ -58,6 +58,24 @@ public class ModCommands {
                         )
                 )
                 .then(
+                    CommandManager.literal("allowAirHit")
+                        .then(
+                            CommandManager.literal("set")
+                                .requires(source -> source.hasPermissionLevel(2)) // OP-only
+                                .then(
+                                    CommandManager.argument("value", BoolArgumentType.bool())
+                                        .executes(ctx -> {
+                                            boolean value = BoolArgumentType.getBool(ctx, "value");
+                                            return setAirHit(ctx.getSource(), value);
+                                        })
+                                )
+                        )
+                        .then(
+                            CommandManager.literal("get")
+                                .executes(ctx -> getAirHit(ctx.getSource()))
+                        )
+                )
+                .then(
                     CommandManager.literal("comboTick")
                         .then(
                             CommandManager.literal("set")
@@ -151,6 +169,27 @@ public class ModCommands {
 
         source.sendFeedback(
             new LiteralText("KnockUBack allow Combo " + value),
+            false
+        );
+        return 1;
+    }
+
+    private static int setAirHit(ServerCommandSource source, boolean value) {
+        ModConfig.INSTANCE.allowAirHit = value;
+        AutoConfig.getConfigHolder(ModConfig.class).save();
+
+        source.sendFeedback(
+            new LiteralText("KnockUBack allow Air Hit " + value),
+            true
+        );
+        return 1;
+    }
+
+    private static int getAirHit(ServerCommandSource source) {
+        boolean value = ModConfig.INSTANCE.allowAirHit;
+
+        source.sendFeedback(
+            new LiteralText("KnockUBack allow Air Hit " + value),
             false
         );
         return 1;
