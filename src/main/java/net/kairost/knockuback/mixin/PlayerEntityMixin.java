@@ -41,6 +41,9 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
     private int knockubackCoolDown;
 
     @Unique
+    private boolean onGroundTmp;
+
+    @Unique
     private static final float EPSILON = Float.MIN_VALUE;
 
     @Inject(method = "tick", at = @At("RETURN"))
@@ -90,6 +93,10 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
                 this.lastDamageTakenTmp = this.lastDamageTaken;
                 this.lastDamageTaken = 0;
             }
+            if (ModConfig.INSTANCE.allowAirHit) {
+                this.onGroundTmp = this.isOnGround();
+                this.setOnGround(true);
+            }
             if (!ModConfig.INSTANCE.causeAggro) {
                 this.attackingPlayerTmp = this.attackingPlayer;
                 this.attackingPlayer = null;
@@ -112,6 +119,9 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
                 if (this.knockubackCoolDown == 0) {
                     this.knockubackCoolDown = ModConfig.INSTANCE.comboTick;
                 }
+            }
+            if (ModConfig.INSTANCE.allowAirHit) {
+                this.setOnGround(this.onGroundTmp);
             }
             if (!ModConfig.INSTANCE.causeAggro) {
                 this.playerHitTimer = this.playerHitTimerTmp;
