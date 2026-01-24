@@ -23,6 +23,8 @@ public class ModConfig implements ConfigData {
 
     public boolean causeAggro = true;
 
+    public boolean allowAirHit = false;
+
     public static void init()
     {
         AutoConfig.register(ModConfig.class, GsonConfigSerializer::new);
