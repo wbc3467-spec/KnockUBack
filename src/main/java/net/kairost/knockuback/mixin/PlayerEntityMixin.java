@@ -1,12 +1,9 @@
 package net.kairost.knockuback.mixin;
 
-import net.minecraft.entity.LazyEntityReference;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.thrown.EggEntity;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
-import org.jetbrains.annotations.Nullable;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.Snowball;
+import net.minecraft.world.entity.projectile.ThrownEgg;
+import net.minecraft.world.damagesource.DamageSource;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -14,87 +11,85 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-import net.kairost.knockuback.config.ModConfig;
+import net.kairost.knockuback.config.KnockUBackConfig;
 
-
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public abstract class PlayerEntityMixin extends LivingEntityMixin {
     @Unique
-    private int timeUntilRegenTmp;
+    private int knockUBack_forge$timeUntilRegenTmp;
 
     @Unique
-    private int hurtTimeTmp;
+    private int knockUBack_forge$hurtTimeTmp;
 
     @Unique
-    private float lastDamageTakenTmp;
+    private float knockUBack_forge$lastDamageTakenTmp;
 
     @Unique
-    private int playerHitTimerTmp;
+    private int knockUBack_forge$playerHitTimerTmp;
 
     @Unique
-    private int knockubackCoolDown;
+    private int knockUBack_forge$knockubackCoolDown;
 
     @Unique
-    private @Nullable LazyEntityReference<PlayerEntity> attackingPlayerTmp;
+    private Player knockUBack_forge$attackingPlayerTmp;
 
     @Unique
-    private static final float EPSILON = Float.MIN_VALUE;
+    private static final float knockUBack_forge$EPSILON = Float.MIN_VALUE;
 
     @ModifyVariable(
-        method = "damage",
+        method = "hurt",
         at = @At("HEAD"),
         argsOnly = true
     )
     private float knockuback$modifyAmount(
         float amount,
-        ServerWorld world,
         DamageSource source
     ) {
-        if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity) && amount == 0.0f && this.knockubackCoolDown == 0) {
-            amount = EPSILON;
+        if (KnockUBackConfig.CONFIG.enabled.get() && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player) && amount == 0.0f && this.knockUBack_forge$knockubackCoolDown == 0) {
+            amount = knockUBack_forge$EPSILON;
         }
         return amount;
     }
 
     @Inject(method = "tick", at = @At("RETURN"))
     private void knockuback$tick(CallbackInfo info) {
-        if (this.knockubackCoolDown > 0) {
-            this.knockubackCoolDown--;
+        if (this.knockUBack_forge$knockubackCoolDown > 0) {
+            this.knockUBack_forge$knockubackCoolDown--;
         }
     }
 
-    @Inject(method = "damage", at = @At("HEAD"))
-    private void knockuback$onDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable cir) {
-        if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
-            if (ModConfig.INSTANCE.allowCombo) {
-                this.timeUntilRegenTmp = this.timeUntilRegen;
-                this.timeUntilRegen = 0;
+    @Inject(method = "hurt", at = @At("HEAD"))
+    private void knockuback$onDamage(DamageSource source, float amount, CallbackInfoReturnable cir) {
+        if (KnockUBackConfig.CONFIG.enabled.get() && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
+            if (KnockUBackConfig.CONFIG.allowCombo.get()) {
+                this.knockUBack_forge$timeUntilRegenTmp = this.invulnerableTime;
+                this.invulnerableTime = 0;
             }
-            this.hurtTimeTmp = this.hurtTime;
+            this.knockUBack_forge$hurtTimeTmp = this.hurtTime;
             this.hurtTime = 0;
-            this.lastDamageTakenTmp = this.lastDamageTaken;
-            this.lastDamageTaken = 0;
-            this.playerHitTimerTmp = this.playerHitTimer;
-            this.playerHitTimer = 0;
-            this.attackingPlayerTmp = this.attackingPlayer;
-            this.attackingPlayer = null;
+            this.knockUBack_forge$lastDamageTakenTmp = this.lastHurt;
+            this.lastHurt = 0;
+            this.knockUBack_forge$playerHitTimerTmp = this.lastHurtByPlayerTime;
+            this.lastHurtByPlayerTime = 0;
+            this.knockUBack_forge$attackingPlayerTmp = this.lastHurtByPlayer;
+            this.lastHurtByPlayer = null;
         }
     }
 
-    @Inject(method = "damage", at = @At("RETURN"))
-    private void knockuback$afterDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable cir) {
-        if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
-            if (ModConfig.INSTANCE.allowCombo) {
-                this.timeUntilRegen = timeUntilRegenTmp;
-                if (this.knockubackCoolDown == 0) {
-                    this.knockubackCoolDown = ModConfig.INSTANCE.comboTick;
+    @Inject(method = "hurt", at = @At("RETURN"))
+    private void knockuback$afterDamage(DamageSource source, float amount, CallbackInfoReturnable cir) {
+        if (KnockUBackConfig.CONFIG.enabled.get() && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
+            if (KnockUBackConfig.CONFIG.allowCombo.get()) {
+                this.invulnerableTime = knockUBack_forge$timeUntilRegenTmp;
+                if (this.knockUBack_forge$knockubackCoolDown == 0) {
+                    this.knockUBack_forge$knockubackCoolDown = KnockUBackConfig.CONFIG.comboTick.get();
                 }
             }
 
-            this.hurtTime = this.hurtTimeTmp;
-            this.lastDamageTaken = this.lastDamageTakenTmp;
-            this.playerHitTimer = this.playerHitTimerTmp;
-            this.attackingPlayer = this.attackingPlayerTmp;
+            this.hurtTime = this.knockUBack_forge$hurtTimeTmp;
+            this.lastHurt = this.knockUBack_forge$lastDamageTakenTmp;
+            this.lastHurtByPlayerTime = this.knockUBack_forge$playerHitTimerTmp;
+            this.lastHurtByPlayer = this.knockUBack_forge$attackingPlayerTmp;
         }
     }
 }

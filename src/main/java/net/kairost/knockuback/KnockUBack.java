@@ -1,15 +1,20 @@
 package net.kairost.knockuback;
 
-import net.fabricmc.api.ModInitializer;
-import net.kairost.knockuback.command.ModCommands;
-import net.kairost.knockuback.config.ModConfig;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.ModLoadingContext;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.kairost.knockuback.config.KnockUBackConfig;
 
-public class KnockUBack implements ModInitializer {
+@Mod(KnockUBack.MODID)
+public class KnockUBack {
     public static final String MODID = "knockuback";
 
-    @Override
-    public void onInitialize() {
-        ModConfig.init();
-        ModCommands.register();
+    public KnockUBack(IEventBus modBus, ModContainer container) {
+        ModLoadingContext.get().registerConfig(
+            ModConfig.Type.CLIENT,
+            KnockUBackConfig.SPEC
+        );
     }
 }

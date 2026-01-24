@@ -1,35 +1,33 @@
 package net.kairost.knockuback.command;
 
-import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.minecraft.command.DefaultPermissions;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
-import me.shedaniel.autoconfig.AutoConfig;
-import net.kairost.knockuback.config.ModConfig;
+import net.kairost.knockuback.KnockUBack;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.kairost.knockuback.config.KnockUBackConfig;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod.EventBusSubscriber;
+import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-
+@EventBusSubscriber(modid = KnockUBack.MODID, bus = EventBusSubscriber.Bus.FORGE)
 public class ModCommands {
-    public static void register() {
-        CommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess, environment) -> registerCommands(dispatcher)
-        );
-    }
 
-    private static void registerCommands(CommandDispatcher<ServerCommandSource> dispatcher) {
+    @SubscribeEvent
+    public static void registerCommands(RegisterCommandsEvent event) {
+        var dispatcher = event.getDispatcher();
+
         dispatcher.register(
-            CommandManager.literal("knockuback")
+            Commands.literal("knockuback")
                 .then(
-                    CommandManager.literal("enabled")
+                    Commands.literal("enabled")
                         .then(
-                            CommandManager.literal("set")
-                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
-                                // OP-only
+                            Commands.literal("set")
+                                // Permission level 2 = moderator / function-op level (adjust as needed)
+                                .requires(source -> source.hasPermission(2))
                                 .then(
-                                    CommandManager.argument("value", BoolArgumentType.bool())
+                                    Commands.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> {
                                             boolean value = BoolArgumentType.getBool(ctx, "value");
                                             return setEnabled(ctx.getSource(), value);
@@ -37,17 +35,17 @@ public class ModCommands {
                                 )
                         )
                         .then(
-                            CommandManager.literal("get")
+                            Commands.literal("get")
                                 .executes(ctx -> getEnabled(ctx.getSource()))
                         )
                 )
                 .then(
-                    CommandManager.literal("allowCombo")
+                    Commands.literal("allowCombo")
                         .then(
-                            CommandManager.literal("set")
-                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
+                            Commands.literal("set")
+                                .requires(source -> source.hasPermission(2)) // OP-only
                                 .then(
-                                    CommandManager.argument("value", BoolArgumentType.bool())
+                                    Commands.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> {
                                             boolean value = BoolArgumentType.getBool(ctx, "value");
                                             return setCombo(ctx.getSource(), value);
@@ -55,17 +53,17 @@ public class ModCommands {
                                 )
                         )
                         .then(
-                            CommandManager.literal("get")
+                            Commands.literal("get")
                                 .executes(ctx -> getCombo(ctx.getSource()))
                         )
                 )
                 .then(
-                    CommandManager.literal("comboTick")
+                    Commands.literal("comboTick")
                         .then(
-                            CommandManager.literal("set")
-                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
+                            Commands.literal("set")
+                                .requires(source -> source.hasPermission(2)) // OP-only
                                 .then(
-                                    CommandManager.argument("value", IntegerArgumentType.integer(0))
+                                    Commands.argument("value", IntegerArgumentType.integer(0))
                                         .executes(ctx -> {
                                             int value = IntegerArgumentType.getInteger(ctx, "value");
                                             return setComboTick(ctx.getSource(), value);
@@ -73,72 +71,73 @@ public class ModCommands {
                                 )
                         )
                         .then(
-                            CommandManager.literal("get")
+                            Commands.literal("get")
                                 .executes(ctx -> getComboTick(ctx.getSource()))
                         )
                 )
         );
     }
 
-    private static int setEnabled(ServerCommandSource source, boolean value) {
-        ModConfig.INSTANCE.enabled = value;
-        AutoConfig.getConfigHolder(ModConfig.class).save();
 
-        source.sendFeedback(
-            () -> Text.literal("KnockUBack enabled " + value),
+    private static int setEnabled(CommandSourceStack source, boolean value) {
+        KnockUBackConfig.CONFIG.enabled.set(value);
+        KnockUBackConfig.SPEC.save();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack enabled " + value),
             true
         );
         return 1;
     }
 
-    private static int getEnabled(ServerCommandSource source) {
-        boolean value = ModConfig.INSTANCE.enabled;
+    private static int getEnabled(CommandSourceStack source) {
+        boolean value = KnockUBackConfig.CONFIG.enabled.get();
 
-        source.sendFeedback(
-            () -> Text.literal("KnockUBack enabled " + value),
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack enabled " + value),
             false
         );
         return 1;
     }
 
-    private static int setCombo(ServerCommandSource source, boolean value) {
-        ModConfig.INSTANCE.allowCombo = value;
-        AutoConfig.getConfigHolder(ModConfig.class).save();
+    private static int setCombo(CommandSourceStack source, boolean value) {
+        KnockUBackConfig.CONFIG.allowCombo.set(value);
+        KnockUBackConfig.SPEC.save();
 
-        source.sendFeedback(
-            () -> Text.literal("KnockUBack allow Combo " + value),
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack allow Combo " + value),
             true
         );
         return 1;
     }
 
-    private static int getCombo(ServerCommandSource source) {
-        boolean value = ModConfig.INSTANCE.allowCombo;
+    private static int getCombo(CommandSourceStack source) {
+        boolean value = KnockUBackConfig.CONFIG.allowCombo.get();
 
-        source.sendFeedback(
-            () -> Text.literal("KnockUBack allow Combo " + value),
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack allow Combo " + value),
             false
         );
         return 1;
     }
 
-    private static int setComboTick(ServerCommandSource source, int value) {
+    private static int setComboTick(CommandSourceStack source, int value) {
 
-        ModConfig.INSTANCE.comboTick = value;
-        AutoConfig.getConfigHolder(ModConfig.class).save();
+        KnockUBackConfig.CONFIG.comboTick.set(value);
+        KnockUBackConfig.SPEC.save();
 
-        source.sendFeedback(
-            () -> Text.literal("KnockUBack Combo Tick " + value),
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack Combo Tick " + value),
             true
         );
         return 1;
     }
 
-    private static int getComboTick(ServerCommandSource source) {
-        int value = ModConfig.INSTANCE.comboTick;
+    private static int getComboTick(CommandSourceStack source) {
+        int value = KnockUBackConfig.CONFIG.comboTick.get();
 
-        source.sendFeedback(
-            () -> Text.literal("KnockUBack Combo Tick " + value),
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack Combo Tick " + value),
             false
         );
         return 1;
