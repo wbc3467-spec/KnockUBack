@@ -5,8 +5,8 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.text.Text;
-import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+import net.minecraft.text.LiteralText;
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 import me.shedaniel.autoconfig.AutoConfig;
 import net.kairost.knockuback.config.ModConfig;
 
@@ -14,7 +14,7 @@ import net.kairost.knockuback.config.ModConfig;
 public class ModCommands {
     public static void register() {
         CommandRegistrationCallback.EVENT.register(
-            (dispatcher, registryAccess, environment) -> registerCommands(dispatcher)
+            (dispatcher, registryAccess) -> registerCommands(dispatcher)
         );
     }
 
@@ -83,7 +83,7 @@ public class ModCommands {
         AutoConfig.getConfigHolder(ModConfig.class).save();
 
         source.sendFeedback(
-            Text.literal("KnockUBack enabled " + value),
+            new LiteralText("KnockUBack enabled " + value),
             true
         );
         return 1;
@@ -93,7 +93,7 @@ public class ModCommands {
         boolean value = ModConfig.INSTANCE.enabled;
 
         source.sendFeedback(
-            Text.literal("KnockUBack enabled " + value),
+            new LiteralText("KnockUBack enabled " + value),
             false
         );
         return 1;
@@ -104,7 +104,7 @@ public class ModCommands {
         AutoConfig.getConfigHolder(ModConfig.class).save();
 
         source.sendFeedback(
-            Text.literal("KnockUBack allow Combo " + value),
+            new LiteralText("KnockUBack allow Combo " + value),
             true
         );
         return 1;
@@ -114,7 +114,7 @@ public class ModCommands {
         boolean value = ModConfig.INSTANCE.allowCombo;
 
         source.sendFeedback(
-            Text.literal("KnockUBack allow Combo " + value),
+            new LiteralText("KnockUBack allow Combo " + value),
             false
         );
         return 1;
@@ -126,7 +126,7 @@ public class ModCommands {
         AutoConfig.getConfigHolder(ModConfig.class).save();
 
         source.sendFeedback(
-            Text.literal("KnockUBack Combo Tick " + value),
+            new LiteralText("KnockUBack Combo Tick " + value),
             true
         );
         return 1;
@@ -136,7 +136,7 @@ public class ModCommands {
         int value = ModConfig.INSTANCE.comboTick;
 
         source.sendFeedback(
-            Text.literal("KnockUBack Combo Tick " + value),
+            new LiteralText("KnockUBack Combo Tick " + value),
             false
         );
         return 1;
