@@ -14,7 +14,7 @@ public class KnockUBack {
     public static final String MODID = "knockuback";
 
     public KnockUBack(IEventBus modBus, ModContainer container) {
-        ModLoadingContext.get().registerConfig(
+        container.registerConfig(
             ModConfig.Type.CLIENT,
             KnockUBackConfig.SPEC
         );
