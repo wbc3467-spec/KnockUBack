@@ -5,6 +5,8 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.entity.projectile.ThrownEgg;
 import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityReference;
+import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -32,7 +34,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     private int knockUBack_forge$knockubackCoolDown;
 
     @Unique
-    private Player knockUBack_forge$attackingPlayerTmp;
+    private @Nullable EntityReference<Player> knockUBack_forge$attackingPlayerTmp;
 
     @Unique
     private static final float knockUBack_forge$EPSILON = Float.MIN_VALUE;
@@ -71,8 +73,8 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
             this.hurtTime = 0;
             this.knockUBack_forge$lastDamageTakenTmp = this.lastHurt;
             this.lastHurt = 0;
-            this.knockUBack_forge$playerHitTimerTmp = this.lastHurtByPlayerTime;
-            this.lastHurtByPlayerTime = 0;
+            this.knockUBack_forge$playerHitTimerTmp = this.lastHurtByPlayerMemoryTime;
+            this.lastHurtByPlayerMemoryTime = 0;
             this.knockUBack_forge$attackingPlayerTmp = this.lastHurtByPlayer;
             this.lastHurtByPlayer = null;
         }
@@ -90,7 +92,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
 
             this.hurtTime = this.knockUBack_forge$hurtTimeTmp;
             this.lastHurt = this.knockUBack_forge$lastDamageTakenTmp;
-            this.lastHurtByPlayerTime = this.knockUBack_forge$playerHitTimerTmp;
+            this.lastHurtByPlayerMemoryTime = this.knockUBack_forge$playerHitTimerTmp;
             this.lastHurtByPlayer = this.knockUBack_forge$attackingPlayerTmp;
         }
     }
