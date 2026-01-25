@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.IntegerArgumentType;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
+import net.minecraft.server.permissions.Permissions;
 import net.kairost.knockuback.config.KnockUBackConfig;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
@@ -22,7 +23,7 @@ public class ModCommands {
                         .then(
                             Commands.literal("set")
                                 // Permission level 2 = moderator / function-op level (adjust as needed)
-                                .requires(source -> source.hasPermission(2))
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
                                 .then(
                                     Commands.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> {
@@ -40,7 +41,7 @@ public class ModCommands {
                     Commands.literal("allowCombo")
                         .then(
                             Commands.literal("set")
-                                .requires(source -> source.hasPermission(2)) // OP-only
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
                                 .then(
                                     Commands.argument("value", BoolArgumentType.bool())
                                         .executes(ctx -> {
@@ -58,7 +59,7 @@ public class ModCommands {
                     Commands.literal("comboTick")
                         .then(
                             Commands.literal("set")
-                                .requires(source -> source.hasPermission(2)) // OP-only
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
                                 .then(
                                     Commands.argument("value", IntegerArgumentType.integer(0))
                                         .executes(ctx -> {
