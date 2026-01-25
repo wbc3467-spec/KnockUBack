@@ -1,5 +1,6 @@
 package net.kairost.knockuback.mixin;
 
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.entity.projectile.Snowball;
 import net.minecraft.world.entity.projectile.ThrownEgg;
@@ -37,12 +38,13 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
     private static final float knockUBack_forge$EPSILON = Float.MIN_VALUE;
 
     @ModifyVariable(
-        method = "hurt",
+        method = "hurtServer",
         at = @At("HEAD"),
         argsOnly = true
     )
     private float knockuback$modifyAmount(
         float amount,
+        ServerLevel world,
         DamageSource source
     ) {
         if (KnockUBackConfig.CONFIG.enabled.get() && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player) && amount == 0.0f && this.knockUBack_forge$knockubackCoolDown == 0) {
@@ -58,8 +60,8 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
         }
     }
 
-    @Inject(method = "hurt", at = @At("HEAD"))
-    private void knockuback$onDamage(DamageSource source, float amount, CallbackInfoReturnable cir) {
+    @Inject(method = "hurtServer", at = @At("HEAD"))
+    private void knockuback$onDamage(ServerLevel world, DamageSource source, float amount, CallbackInfoReturnable cir) {
         if (KnockUBackConfig.CONFIG.enabled.get() && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
             if (KnockUBackConfig.CONFIG.allowCombo.get()) {
                 this.knockUBack_forge$timeUntilRegenTmp = this.invulnerableTime;
@@ -76,8 +78,8 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin {
         }
     }
 
-    @Inject(method = "hurt", at = @At("RETURN"))
-    private void knockuback$afterDamage(DamageSource source, float amount, CallbackInfoReturnable cir) {
+    @Inject(method = "hurtServer", at = @At("RETURN"))
+    private void knockuback$afterDamage(ServerLevel world, DamageSource source, float amount, CallbackInfoReturnable cir) {
         if (KnockUBackConfig.CONFIG.enabled.get() && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
             if (KnockUBackConfig.CONFIG.allowCombo.get()) {
                 this.invulnerableTime = knockUBack_forge$timeUntilRegenTmp;
