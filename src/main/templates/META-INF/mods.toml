@@ -11,7 +11,6 @@ description="Knock U Back"
 [[mixins]]
 config="knockuback.mixins.json"
 
-
 [[dependencies."${mod_id}"]]
 modId="neoforge"
 mandatory=true
@@ -25,4 +24,3 @@ mandatory=true
 versionRange="${minecraft_version_range}"
 ordering="NONE"
 side="SERVER"
-
