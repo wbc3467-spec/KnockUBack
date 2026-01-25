@@ -2,16 +2,13 @@ package net.kairost.knockuback.command;
 
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.IntegerArgumentType;
-import net.kairost.knockuback.KnockUBack;
 import net.minecraft.commands.CommandSourceStack;
 import net.minecraft.commands.Commands;
 import net.minecraft.network.chat.Component;
 import net.kairost.knockuback.config.KnockUBackConfig;
 import net.neoforged.bus.api.SubscribeEvent;
-import net.neoforged.fml.common.Mod.EventBusSubscriber;
 import net.neoforged.neoforge.event.RegisterCommandsEvent;
 
-@EventBusSubscriber(modid = KnockUBack.MODID, bus = EventBusSubscriber.Bus.FORGE)
 public class ModCommands {
 
     @SubscribeEvent
