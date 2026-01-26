@@ -77,6 +77,42 @@ public class ModCommands {
                                 .executes(ctx -> getComboTick(ctx.getSource()))
                         )
                 )
+                .then(
+                    CommandManager.literal("damageArmor")
+                        .then(
+                            CommandManager.literal("set")
+                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
+                                .then(
+                                    CommandManager.argument("value", BoolArgumentType.bool())
+                                        .executes(ctx -> {
+                                            boolean value = BoolArgumentType.getBool(ctx, "value");
+                                            return setDamageArmor(ctx.getSource(), value);
+                                        })
+                                )
+                        )
+                        .then(
+                            CommandManager.literal("get")
+                                .executes(ctx -> getDamageArmor(ctx.getSource()))
+                        )
+                )
+                .then(
+                    CommandManager.literal("causeAggro")
+                        .then(
+                            CommandManager.literal("set")
+                                .requires(source -> source.getPermissions().hasPermission(DefaultPermissions.MODERATORS))
+                                .then(
+                                    CommandManager.argument("value", BoolArgumentType.bool())
+                                        .executes(ctx -> {
+                                            boolean value = BoolArgumentType.getBool(ctx, "value");
+                                            return setAggro(ctx.getSource(), value);
+                                        })
+                                )
+                        )
+                        .then(
+                            CommandManager.literal("get")
+                                .executes(ctx -> getAggro(ctx.getSource()))
+                        )
+                )
         );
     }
 
@@ -139,6 +175,48 @@ public class ModCommands {
 
         source.sendFeedback(
             () -> Text.literal("KnockUBack Combo Tick " + value),
+            false
+        );
+        return 1;
+    }
+
+    private static int setDamageArmor(ServerCommandSource source, boolean value) {
+        ModConfig.INSTANCE.damageArmor = value;
+        AutoConfig.getConfigHolder(ModConfig.class).save();
+
+        source.sendFeedback(
+            () -> Text.literal("KnockUBack damage Armor " + value),
+            true
+        );
+        return 1;
+    }
+
+    private static int getDamageArmor(ServerCommandSource source) {
+        boolean value = ModConfig.INSTANCE.damageArmor;
+
+        source.sendFeedback(
+            () -> Text.literal("KnockUBack damage Armor " + value),
+            false
+        );
+        return 1;
+    }
+
+    private static int setAggro(ServerCommandSource source, boolean value) {
+        ModConfig.INSTANCE.causeAggro = value;
+        AutoConfig.getConfigHolder(ModConfig.class).save();
+
+        source.sendFeedback(
+            () -> Text.literal("KnockUBack cause Aggro " + value),
+            true
+        );
+        return 1;
+    }
+
+    private static int getAggro(ServerCommandSource source) {
+        boolean value = ModConfig.INSTANCE.causeAggro;
+
+        source.sendFeedback(
+            () -> Text.literal("KnockUBack cause Aggro " + value),
             false
         );
         return 1;
