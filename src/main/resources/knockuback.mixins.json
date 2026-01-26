@@ -6,7 +6,9 @@
   "mixins": [
     "EntityMixin",
     "LivingEntityMixin",
-    "PlayerEntityMixin"
+    "PlayerEntityMixin",
+    "accessor.LivingEntityAccessor",
+    "invoker.DamageSourceInvoker"
   ],
   "server": [],
   "client": [],
