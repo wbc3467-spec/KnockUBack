@@ -95,7 +95,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
             }
             if (ModConfig.INSTANCE.allowAirHit) {
                 this.onGroundTmp = this.isOnGround();
-                this.setOnGround(true);
+                knockuback$setOnGround(true);
             }
             if (!ModConfig.INSTANCE.causeAggro) {
                 this.attackingPlayerTmp = this.attackingPlayer;
@@ -121,7 +121,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
                 }
             }
             if (ModConfig.INSTANCE.allowAirHit) {
-                this.setOnGround(this.onGroundTmp);
+                knockuback$setOnGround(this.onGroundTmp);
             }
             if (!ModConfig.INSTANCE.causeAggro) {
                 this.playerHitTimer = this.playerHitTimerTmp;
