@@ -7,7 +7,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LivingEntity.class)
-public interface LivingEntityAccessor {
+public interface LivingEntityAccessor extends EntityAccessor {
     @Accessor("attackerReference")
     @Nullable LazyEntityReference<LivingEntity> knockuback$getAttackerReference();
 
