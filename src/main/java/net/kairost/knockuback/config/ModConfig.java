@@ -15,9 +15,13 @@ public class ModConfig implements ConfigData {
 
     public boolean enabled = true;
 
-    public boolean allowCombo = true;
+    public boolean allowCombo = false;
 
     public int comboTick = 0;
+
+    public boolean damageArmor = false;
+
+    public boolean causeAggro = true;
 
     public static void init()
     {
