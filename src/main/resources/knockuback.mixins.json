@@ -6,7 +6,9 @@
   "mixins": [
     "EntityMixin",
     "LivingEntityMixin",
-    "PlayerEntityMixin"
+    "PlayerEntityMixin",
+    "accessor.EntityAccessor",
+    "accessor.LivingEntityAccessor"
   ],
   "server": [],
   "client": [],
