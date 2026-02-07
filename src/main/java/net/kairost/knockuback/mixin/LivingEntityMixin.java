@@ -9,12 +9,16 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends EntityMixin{
     @Shadow
+    public abstract int getLastHurtByMobTimestamp();
+
+    @Shadow
+    public abstract @Nullable LivingEntity getLastHurtByMob();
+
+    @Shadow
     protected int lastHurtByPlayerTime;
     @Shadow
     @Nullable
     protected Player lastHurtByPlayer;
     @Shadow
     protected float lastHurt;
-    @Shadow
-    public int hurtTime;
 }
