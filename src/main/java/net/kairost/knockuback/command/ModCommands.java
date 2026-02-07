@@ -56,6 +56,24 @@ public class ModCommands {
                         )
                 )
                 .then(
+                    Commands.literal("allowAirHit")
+                        .then(
+                            Commands.literal("set")
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
+                                .then(
+                                    Commands.argument("value", BoolArgumentType.bool())
+                                        .executes(ctx -> {
+                                            boolean value = BoolArgumentType.getBool(ctx, "value");
+                                            return setAirHit(ctx.getSource(), value);
+                                        })
+                                )
+                        )
+                        .then(
+                            Commands.literal("get")
+                                .executes(ctx -> getAirHit(ctx.getSource()))
+                        )
+                )
+                .then(
                     Commands.literal("comboTick")
                         .then(
                             Commands.literal("set")
@@ -71,6 +89,42 @@ public class ModCommands {
                         .then(
                             Commands.literal("get")
                                 .executes(ctx -> getComboTick(ctx.getSource()))
+                        )
+                )
+                .then(
+                    Commands.literal("damageArmor")
+                        .then(
+                            Commands.literal("set")
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
+                                .then(
+                                    Commands.argument("value", BoolArgumentType.bool())
+                                        .executes(ctx -> {
+                                            boolean value = BoolArgumentType.getBool(ctx, "value");
+                                            return setDamageArmor(ctx.getSource(), value);
+                                        })
+                                )
+                        )
+                        .then(
+                            Commands.literal("get")
+                                .executes(ctx -> getDamageArmor(ctx.getSource()))
+                        )
+                )
+                .then(
+                    Commands.literal("causeAggro")
+                        .then(
+                            Commands.literal("set")
+                                .requires(source -> source.permissions().hasPermission(Permissions.COMMANDS_MODERATOR))
+                                .then(
+                                    Commands.argument("value", BoolArgumentType.bool())
+                                        .executes(ctx -> {
+                                            boolean value = BoolArgumentType.getBool(ctx, "value");
+                                            return setAggro(ctx.getSource(), value);
+                                        })
+                                )
+                        )
+                        .then(
+                            Commands.literal("get")
+                                .executes(ctx -> getAggro(ctx.getSource()))
                         )
                 )
         );
@@ -119,6 +173,27 @@ public class ModCommands {
         return 1;
     }
 
+    private static int setAirHit(CommandSourceStack source, boolean value) {
+        KnockUBackConfig.CONFIG.allowAirHit.set(value);
+        KnockUBackConfig.SPEC.save();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack allow Air Hit " + value),
+            true
+        );
+        return 1;
+    }
+
+    private static int getAirHit(CommandSourceStack source) {
+        boolean value = KnockUBackConfig.CONFIG.allowAirHit.get();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack allow Air Hit " + value),
+            false
+        );
+        return 1;
+    }
+
     private static int setComboTick(CommandSourceStack source, int value) {
 
         KnockUBackConfig.CONFIG.comboTick.set(value);
@@ -136,6 +211,48 @@ public class ModCommands {
 
         source.sendSuccess(
             () -> Component.literal("KnockUBack Combo Tick " + value),
+            false
+        );
+        return 1;
+    }
+
+    private static int setDamageArmor(CommandSourceStack source, boolean value) {
+        KnockUBackConfig.CONFIG.damageArmor.set(value);
+        KnockUBackConfig.SPEC.save();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack damage Armor " + value),
+            true
+        );
+        return 1;
+    }
+
+    private static int getDamageArmor(CommandSourceStack source) {
+        boolean value = KnockUBackConfig.CONFIG.damageArmor.get();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack damage Armor " + value),
+            false
+        );
+        return 1;
+    }
+
+    private static int setAggro(CommandSourceStack source, boolean value) {
+        KnockUBackConfig.CONFIG.causeAggro.set(value);
+        KnockUBackConfig.SPEC.save();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack cause Aggro " + value),
+            true
+        );
+        return 1;
+    }
+
+    private static int getAggro(CommandSourceStack source) {
+        boolean value = KnockUBackConfig.CONFIG.causeAggro.get();
+
+        source.sendSuccess(
+            () -> Component.literal("KnockUBack cause Aggro " + value),
             false
         );
         return 1;
