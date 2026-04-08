@@ -1,5 +1,5 @@
 plugins {
-    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom' version "${loom_version}"
     id 'maven-publish'
 }
 
@@ -20,11 +20,10 @@ repositories {
 dependencies {
     //to change the versions see the gradle.properties file
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-    modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
-    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
-    modApi("me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}") {
+    implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    implementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+    implementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    compileOnly("me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}") {
         exclude(group: "net.fabricmc.fabric-api")
     }
     include "me.shedaniel.cloth:cloth-config-fabric:${project.clothconfig_version}"
@@ -43,12 +42,12 @@ processResources {
 // see http://yodaconditions.net/blog/fix-for-java-file-encoding-problems-with-gradle.html
 tasks.withType(JavaCompile).configureEach {
     it.options.encoding = "UTF-8"
-    it.options.release = 21
+    it.options.release = 25
 }
 
-tasks.named("remapJar") {
+tasks.named("jar") {
     archiveFileName.set(
-            "${project.archives_base_name}-fabric-${project.minecraft_version}-${project.version}.jar"
+            "${archives_base_name}-fabric-${minecraft_version}-${mod_version}.jar"
     )
 }
 
@@ -57,6 +56,8 @@ java {
     // if it is present.
     // If you remove this line, sources will not be generated.
     withSourcesJar()
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
 }
 
 jar {

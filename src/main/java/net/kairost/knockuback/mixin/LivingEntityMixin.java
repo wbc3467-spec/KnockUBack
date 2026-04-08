@@ -1,8 +1,8 @@
 package net.kairost.knockuback.mixin;
 
-import net.minecraft.entity.LazyEntityReference;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -10,13 +10,13 @@ import org.spongepowered.asm.mixin.Shadow;
 @Mixin(LivingEntity.class)
 public abstract class LivingEntityMixin extends EntityMixin{
     @Shadow
-    public abstract int getLastAttackedTime();
+    public abstract int getLastHurtByMobTimestamp();
 
     @Shadow
     @Nullable
-    protected LazyEntityReference<PlayerEntity> attackingPlayer;
+    protected EntityReference<Player> lastHurtByPlayer;
     @Shadow
-    protected int playerHitTimer;
+    protected int lastHurtByPlayerMemoryTime;
     @Shadow
-    protected float lastDamageTaken;
+    protected float lastHurt;
 }

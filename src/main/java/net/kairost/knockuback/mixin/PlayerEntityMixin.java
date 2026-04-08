@@ -1,12 +1,12 @@
 package net.kairost.knockuback.mixin;
 
-import net.minecraft.entity.LazyEntityReference;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.entity.LivingEntity;
-import net.minecraft.entity.damage.DamageSource;
-import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.entity.projectile.thrown.EggEntity;
-import net.minecraft.entity.projectile.thrown.SnowballEntity;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.Snowball;
+import net.minecraft.world.entity.projectile.throwableitemprojectile.ThrownEgg;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -19,7 +19,7 @@ import net.kairost.knockuback.config.ModConfig;
 import net.kairost.knockuback.mixin.accessor.LivingEntityAccessor;
 
 
-@Mixin(PlayerEntity.class)
+@Mixin(Player.class)
 public abstract class PlayerEntityMixin extends LivingEntityMixin implements LivingEntityAccessor {
     @Unique
     private int timeUntilRegenTmp;
@@ -28,13 +28,13 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
     private float lastDamageTakenTmp;
 
     @Unique
-    private @Nullable LazyEntityReference<PlayerEntity> attackingPlayerTmp;
+    private @Nullable EntityReference<Player> attackingPlayerTmp;
 
     @Unique
     private int playerHitTimerTmp;
 
     @Unique
-    private @Nullable LazyEntityReference<LivingEntity> attackerReferenceTmp;
+    private @Nullable EntityReference<LivingEntity> attackerReferenceTmp;
 
     @Unique
     private int lastAttackedTimeTmp;
@@ -56,7 +56,7 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
     }
 
     @ModifyVariable(
-        method = "damageArmor",
+        method = "hurtArmor",
         at = @At("HEAD"),
         argsOnly = true
     )
@@ -64,60 +64,60 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
         float amount,
         DamageSource source
     ) {
-        if (ModConfig.INSTANCE.enabled && !ModConfig.INSTANCE.damageArmor && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
+        if (ModConfig.INSTANCE.enabled && !ModConfig.INSTANCE.damageArmor && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
             return 0f;
         }
         return amount;
     }
 
     @ModifyVariable(
-        method = "damage",
+        method = "hurtServer",
         at = @At("HEAD"),
         argsOnly = true
     )
     private float knockuback$modifyAmount(
         float amount,
-        ServerWorld world,
+        ServerLevel world,
         DamageSource source
     ) {
-        if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity) && this.knockubackCoolDown == 0) {
+        if (ModConfig.INSTANCE.enabled && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player) && this.knockubackCoolDown == 0) {
             amount = EPSILON;
         }
         return amount;
     }
 
-    @Inject(method = "damage", at = @At("HEAD"))
-    private void knockuback$onDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable cir) {
-        if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
+    @Inject(method = "hurtServer", at = @At("HEAD"))
+    private void knockuback$onDamage(ServerLevel world, DamageSource source, float amount, CallbackInfoReturnable cir) {
+        if (ModConfig.INSTANCE.enabled && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
             if (ModConfig.INSTANCE.allowCombo) {
-                this.timeUntilRegenTmp = this.timeUntilRegen;
-                this.timeUntilRegen = 0;
-                this.lastDamageTakenTmp = this.lastDamageTaken;
-                this.lastDamageTaken = 0;
+                this.timeUntilRegenTmp = this.invulnerableTime;
+                this.invulnerableTime = 0;
+                this.lastDamageTakenTmp = this.lastHurt;
+                this.lastHurt = 0;
             }
             if (ModConfig.INSTANCE.allowAirHit) {
-                this.onGroundTmp = this.isOnGround();
+                this.onGroundTmp = this.onGround();
                 knockuback$setOnGround(true);
             }
             if (!ModConfig.INSTANCE.causeAggro) {
-                this.attackingPlayerTmp = this.attackingPlayer;
-                this.attackingPlayer = null;
-                this.playerHitTimerTmp = this.playerHitTimer;
-                this.playerHitTimer = 0;
+                this.attackingPlayerTmp = this.lastHurtByPlayer;
+                this.lastHurtByPlayer = null;
+                this.playerHitTimerTmp = this.lastHurtByPlayerMemoryTime;
+                this.lastHurtByPlayerMemoryTime = 0;
                 this.attackerReferenceTmp = knockuback$getAttackerReference();
                 knockuback$setAttackerReference(null);
-                this.lastAttackedTimeTmp = this.getLastAttackedTime();
+                this.lastAttackedTimeTmp = this.getLastHurtByMobTimestamp();
                 knockuback$setLastAttackedTime(0);
             }
         }
     }
 
-    @Inject(method = "damage", at = @At("RETURN"))
-    private void knockuback$afterDamage(ServerWorld world, DamageSource source, float amount, CallbackInfoReturnable cir) {
-        if (ModConfig.INSTANCE.enabled && (source.getSource() instanceof SnowballEntity || source.getSource() instanceof EggEntity) && (source.getAttacker() instanceof PlayerEntity)) {
+    @Inject(method = "hurtServer", at = @At("RETURN"))
+    private void knockuback$afterDamage(ServerLevel world, DamageSource source, float amount, CallbackInfoReturnable cir) {
+        if (ModConfig.INSTANCE.enabled && (source.getDirectEntity() instanceof Snowball || source.getDirectEntity() instanceof ThrownEgg) && (source.getEntity() instanceof Player)) {
             if (ModConfig.INSTANCE.allowCombo) {
-                this.timeUntilRegen = timeUntilRegenTmp;
-                this.lastDamageTaken = this.lastDamageTakenTmp;
+                this.invulnerableTime = timeUntilRegenTmp;
+                this.lastHurt = this.lastDamageTakenTmp;
                 if (this.knockubackCoolDown == 0) {
                     this.knockubackCoolDown = ModConfig.INSTANCE.comboTick;
                 }
@@ -126,8 +126,8 @@ public abstract class PlayerEntityMixin extends LivingEntityMixin implements Liv
                 knockuback$setOnGround(this.onGroundTmp);
             }
             if (!ModConfig.INSTANCE.causeAggro) {
-                this.playerHitTimer = this.playerHitTimerTmp;
-                this.attackingPlayer = this.attackingPlayerTmp;
+                this.lastHurtByPlayerMemoryTime = this.playerHitTimerTmp;
+                this.lastHurtByPlayer = this.attackingPlayerTmp;
                 knockuback$setAttackerReference(this.attackerReferenceTmp);
                 knockuback$setLastAttackedTime(this.lastAttackedTimeTmp);
             }

@@ -1,19 +1,19 @@
 package net.kairost.knockuback.mixin.accessor;
 
-import net.minecraft.entity.LazyEntityReference;
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.EntityReference;
+import net.minecraft.world.entity.LivingEntity;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LivingEntity.class)
 public interface LivingEntityAccessor extends EntityAccessor {
-    @Accessor("attackerReference")
-    @Nullable LazyEntityReference<LivingEntity> knockuback$getAttackerReference();
+    @Accessor("lastHurtByMob")
+    @Nullable EntityReference<LivingEntity> knockuback$getAttackerReference();
 
-    @Accessor("attackerReference")
-    void knockuback$setAttackerReference(@Nullable LazyEntityReference<LivingEntity> attackerReference);
+    @Accessor("lastHurtByMob")
+    void knockuback$setAttackerReference(@Nullable EntityReference<LivingEntity> attackerReference);
 
-    @Accessor("lastAttackedTime")
+    @Accessor("lastHurtByMobTimestamp")
     void knockuback$setLastAttackedTime(int lastAttackedTime);
 }
